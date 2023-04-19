@@ -1,7 +1,11 @@
 package com.medbook.entities;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
+import java.util.TreeSet;
 
 public class Slot {
 	private Doctor doctor;
@@ -48,5 +52,43 @@ public class Slot {
 		this.patient = patient;
 	}
 	
-
+	public void bookSlot(List<Slot> slots,Slot newBooking) {
+		TreeSet<Slot> sortedSlots = new TreeSet<Slot>(
+				(slot1,slot2) -> (slot1.getTimeSlot().getStartTime()).compareTo(slot2.getTimeSlot().getStartTime())
+		);
+		sortedSlots.addAll(slots);
+		
+		Slot higherSlot = sortedSlots.ceiling(newBooking);
+		Slot lowerSlot = sortedSlots.floor(newBooking);
+		
+		boolean slotFree = lowerSlot.getTimeSlot().getEndTime().isBefore(newBooking.getTimeSlot().getStartTime())
+				&&
+			newBooking.getTimeSlot().getEndTime().isBefore(higherSlot.getTimeSlot().getStartTime())
+			
+				;
+		
+		if(slotFree) {
+			// book the slot
+			synchronized (lowerSlot) {
+				slotFree = lowerSlot.getTimeSlot().getEndTime().isBefore(newBooking.getTimeSlot().getStartTime())
+						&&
+					newBooking.getTimeSlot().getEndTime().isBefore(higherSlot.getTimeSlot().getStartTime())
+					
+						;
+				if(slotFree) {
+					// actually book it
+					
+				} else {
+					System.out.println("CANNOT BOOK ..THERE ARE OVERLAPPING SLOTS!!!!");
+				}
+			}
+			
+		} else {
+			System.out.println("CANNOT BOOK ..THERE ARE OVERLAPPING SLOTS!!!!");
+		}
+		
+		
+		
+		
+	}
 }
